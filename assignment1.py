@@ -104,7 +104,6 @@ class CityMap:
 
         for friend_location in self.friends:
             friend, initial_location = friend_location
-            print("\n" + friend)
 
             # get the valid routes for the first friend
             location_dist_nodedist = self.get_valid_pickup_locations(self.dijkstras(start_node=initial_location, edge_type_input="T"))
@@ -114,11 +113,9 @@ class CityMap:
                 distance_to_end, path_to_end = self.dijkstras(start_node=pickup_location, end_node=destination)
 
                 total_time = distance_pickup + distance_to_end + distance_from_friend
-                print(nodedistance, distance_from_friend, total_time)
 
 
                 if (total_time < final_route_time) or ((total_time == final_route_time) and (nodedistance < train_stations_travelled_to)):
-                    print("dist:",distance_from_friend)
                     final_route_time = total_time
                     path_pickup.pop() # popping the pickup location so it isnt repeated in the final route
                     route = path_pickup + path_to_end
@@ -145,13 +142,7 @@ if __name__ == "__main__":
     friends = [("Grizz", 1), ("Ice", 3)]
 
     myCity = CityMap(roads,tracks,friends)
-
-    # roads = [(0,1,2)]
-    # tracks = [(0,1,3)]
-    # friends = [('Sarah', 0)]
-    # myCity = CityMap(roads, tracks, friends)
-
-
+    
     print(myCity.plan(start=2, destination=5))
 
 
