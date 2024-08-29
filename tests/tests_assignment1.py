@@ -103,7 +103,7 @@ class TestCityMap(unittest.TestCase):
     
     def test_my_example_5(self):
         roads = [(0,1,1), (1,2,1), (2,3,1), (3,4,1), (4,5,1)]
-        tracks = [(0,5,10), (1,3,1), (2,5,1)]
+        tracks = [(0,5,4), (1,3,1), (2,5,1)]
         friends = [('Minnie', 0), ('Mouse', 1)]
         myCity = CityMap(roads, tracks, friends)
 
