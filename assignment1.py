@@ -10,7 +10,7 @@ class CityMap:
 
         size_initialisation = len(self.roads) + 1 # O(|R|) + O(1) => O(|R|)
 
-        self.adj_list = [[] for _ in range(size_initialisation)] # initialising the space for the adj_list using the larger magnitude
+        self.adj_list = [[] for _ in range(size_initialisation)] # initialising the space for the adj_list
 
         # adding the roads and the tracks to the adj_list of the CityMap class
         self.add_roads()
@@ -53,7 +53,6 @@ class CityMap:
             # stop if the end node is reached because thats all we need to traverse
             if end_node is not None and u == end_node:
                 break
-
 
             # relaxation step
             for v, weight, edge_type in self.adj_list[u]: 
