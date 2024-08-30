@@ -32,21 +32,6 @@ class MinHeap:
 
         return root
 
-    def decrease_key(self, value, new_priority):
-        # Find the index of the element to decrease its key
-        index = None
-        for i in range(len(self.heap)):
-            if self.heap[i][0] == value:
-                index = i
-                break
-        
-        if index is None:
-            return
-
-        # Update the priority and heapify up to maintain the heap property
-        self.heap[index] = (value, new_priority)
-        self._heapify_up(index)
-
     def _heapify_up(self, i):
         # Move the element at index i up the heap to its correct position
         while i > 0 and self.heap[self.parent(i)][1] > self.heap[i][1]:
