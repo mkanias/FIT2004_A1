@@ -3,6 +3,25 @@ from minheap import MinHeap
 
 class CityMap:
     def __init__(self, roads: list[tuple[int,int,int]], tracks: list[tuple[int,int,int]], friends: list[tuple[int,str]]) -> None:
+        """
+        Function description: This function initialises the adjacency list (graph implementations structure)
+        containing the roads and tracks. 
+        
+        Input: 
+            roads: a list of tuples containing location u and v and the distance between them via undirected roads
+            tracks: a list of tuples containing location u and v and the distance between them via directed tracks
+            friends: a list of tuples containing the location of friend and the friends name
+            
+        Output: None
+            
+        Time complexity: O(n*log(n)), where n is the number of elements in the input array 
+
+        Time complexity analysis :  
+
+        Space complexity: O(n),  where n is the number of elements in the input array
+
+        Space complexity analysis:  Merge sort and output array both require O(n) aux space O(n) + O(n) = O(n).
+        """
         # define the roads, tracks and friends inputs as class variables 
         self.roads = roads
         self.tracks = tracks
@@ -10,7 +29,7 @@ class CityMap:
 
         size_initialisation = len(self.roads) + 1 # O(|R|) + O(1) => O(|R|)
 
-        self.adj_list = [[] for _ in range(size_initialisation)] # initialising the space for the adj_list
+        self.adj_list = [[] for _ in range(size_initialisation)] # initialising the space for the adj_list O(|R|)
 
         # adding the roads and the tracks to the adj_list of the CityMap class
         self.add_roads()
@@ -18,6 +37,23 @@ class CityMap:
 
 
     def add_roads(self) -> None:
+        """
+        Function description: This function adds roads to the adj_list. 
+        
+        Input: 
+            self
+            
+        Output: None
+            
+        Time complexity: O(N), where N is the number of elements in the roads array 
+
+        Time complexity analysis :  The for loop is iterating N times and then completing 2 O(1) append operations
+
+        Space complexity: O(n),  where n is the number of elements in the input array
+
+        Space complexity analysis:  Merge sort and output array both require O(n) aux space O(n) + O(n) = O(n).
+        """
+
         # looping through each road tuple
         for road in self.roads:
             start_vertex, end_vertex, time = road
@@ -73,58 +109,72 @@ class CityMap:
 
         # reconstructing shortest path if end node is provided
         if end_node is not None:
-            path = []
-            current = end_node
-            while current != -1:
-                path.append(current)
-                current = parent[current]
-            path.reverse()
+            path = self.route_reconstruction(start=end_node, parents=parent)
             return distance[end_node], path
 
         # if not, then just return the distance and parent lists
         return distance, parent, train_hops
     
 
-    def get_valid_pickup_locations(self, dist_parent_tuple: tuple[list[int], list[int]]) -> list[tuple]:
+    def route_reconstruction(self, start: int, parents: list[int]) -> list[int]:
+        path = []
+        current = start
+        while current != -1:
+            path.append(current)
+            current = parents[current]
+        path.reverse()
+        return path
+    
+
+    def get_valid_pickup_locations(self, dist_parent_tuple: tuple[list[int], list[int]]) -> list[tuple[int]]:
         distance, parent, train_hops = dist_parent_tuple
-        valid_pickuplocation_distance_trainhops = []
+        pickuplocation_distance_trainhops = []
         for i in range(len(distance)):
             if not distance[i] == float('inf'):
-                valid_pickuplocation_distance_trainhops.append((i, distance[i], train_hops[i]))
+                pickuplocation_distance_trainhops.append((i, distance[i], train_hops[i]))
 
-        return valid_pickuplocation_distance_trainhops
+        return pickuplocation_distance_trainhops
 
 
 
     def plan(self, start: int, destination: int) -> tuple: # (total_time, route, pickup_friend, pickup_location)
-        final_route_time = float('inf') # (total_time, route, pickup_friend, pickup_location, train_stops)
-        train_stations_travelled_to = float('inf')
-        final_distance_from_friend = 0
+        start_distances, start_parents, _ = self.dijkstras(start_node=start) # finding shortest distance from start to all other nodes
+        destination_distances, destination_parents, _ = self.dijkstras(start_node=destination) # finding shortest distance from destination to all other nodes
 
-        for friend_location in self.friends:
-            friend, initial_location = friend_location
+        # initialising final values
+        final_total_time = float('inf')
+        route = []
+        pickup_friend = None
+        pickup_location = None
+        final_dist_pickup_from_friend = None
+        final_pickup_trainhops = float('inf')
 
-            # get the valid routes for the first friend
-            location_dist_nodedist = self.get_valid_pickup_locations(self.dijkstras(start_node=initial_location, edge_type_input="T"))
+        for friend, friend_location in self.friends:
+            dist_parent_trainhop = self.dijkstras(start_node=friend_location, edge_type_input="T") # finding distances from friend location to all other locations
+            friendpickup_distpickup_trainhops_tuple = self.get_valid_pickup_locations(dist_parent_tuple=dist_parent_trainhop)
 
-            for pickup_location, distance_from_friend, nodedistance in location_dist_nodedist:
-                distance_pickup, path_pickup = self.dijkstras(start_node=start, end_node=pickup_location)
-                distance_to_end, path_to_end = self.dijkstras(start_node=pickup_location, end_node=destination)
+            for friend_valid_pickup_location, dist_pickup_from_friend, pickup_trainhops in friendpickup_distpickup_trainhops_tuple:
+                total_time = start_distances[friend_valid_pickup_location] + destination_distances[friend_valid_pickup_location] + dist_pickup_from_friend
 
-                total_time = distance_pickup + distance_to_end + distance_from_friend
-
-
-                if (total_time < final_route_time) or ((total_time == final_route_time) and (nodedistance < train_stations_travelled_to)):
-                    final_route_time = total_time
-                    path_pickup.pop() # popping the pickup location so it isnt repeated in the final route
-                    route = path_pickup + path_to_end
+                if (total_time < final_total_time) or (total_time == final_total_time and pickup_trainhops < final_pickup_trainhops):
+                    final_total_time = total_time
                     pickup_friend = friend
-                    final_pickup_location = pickup_location
-                    final_distance_from_friend = distance_from_friend 
+                    pickup_location = friend_valid_pickup_location
+                    final_pickup_trainhops = pickup_trainhops
+                    final_dist_pickup_from_friend = dist_pickup_from_friend
 
-        final_route_time = final_route_time - final_distance_from_friend # update the final route time to not include the time travelled by friend on train
+                    route_start_pickup = self.route_reconstruction(start=pickup_location, parents=start_parents)
+                    route_pickup_destination = self.route_reconstruction(start=destination, parents=destination_parents)                        
+                    
+                    # reconstructing the final route
+                    _, route_pickup_destination = self.dijkstras(start_node=pickup_location, end_node=destination)
+                    route = route_start_pickup[:-1] + route_pickup_destination
 
-        return final_route_time, route, pickup_friend, final_pickup_location
+        # getting rid of the distance of pickup from final time
+        final_total_time = final_total_time - final_dist_pickup_from_friend
+
+        return final_total_time, route, pickup_friend, pickup_location
+
 
 
     def __str__(self) -> str:
@@ -142,6 +192,4 @@ if __name__ == "__main__":
 
     myCity = CityMap(roads,tracks,friends)
     
-    print(myCity.plan(start=2, destination=5))
-
-
+    print(myCity.plan(start=0, destination=4))
