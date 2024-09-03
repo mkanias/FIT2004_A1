@@ -3,25 +3,6 @@ from minheap import MinHeap
 
 class CityMap:
     def __init__(self, roads: list[tuple[int,int,int]], tracks: list[tuple[int,int,int]], friends: list[tuple[int,str]]) -> None:
-        """
-        Function description: This function initialises the adjacency list (graph implementations structure)
-        containing the roads and tracks. 
-        
-        Input: 
-            roads: a list of tuples containing location u and v and the distance between them via undirected roads
-            tracks: a list of tuples containing location u and v and the distance between them via directed tracks
-            friends: a list of tuples containing the location of friend and the friends name
-            
-        Output: None
-            
-        Time complexity: O(n*log(n)), where n is the number of elements in the input array 
-
-        Time complexity analysis :  
-
-        Space complexity: O(n),  where n is the number of elements in the input array
-
-        Space complexity analysis:  Merge sort and output array both require O(n) aux space O(n) + O(n) = O(n).
-        """
         # define the roads, tracks and friends inputs as class variables 
         self.roads = roads
         self.tracks = tracks
@@ -37,23 +18,6 @@ class CityMap:
 
 
     def add_roads(self) -> None:
-        """
-        Function description: This function adds roads to the adj_list. 
-        
-        Input: 
-            self
-            
-        Output: None
-            
-        Time complexity: O(N), where N is the number of elements in the roads array 
-
-        Time complexity analysis :  The for loop is iterating N times and then completing 2 O(1) append operations
-
-        Space complexity: O(n),  where n is the number of elements in the input array
-
-        Space complexity analysis:  Merge sort and output array both require O(n) aux space O(n) + O(n) = O(n).
-        """
-
         # looping through each road tuple
         for road in self.roads:
             start_vertex, end_vertex, time = road
@@ -192,4 +156,4 @@ if __name__ == "__main__":
 
     myCity = CityMap(roads,tracks,friends)
     
-    print(myCity.plan(start=0, destination=4))
+    print(myCity)
