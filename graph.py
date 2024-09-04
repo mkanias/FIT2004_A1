@@ -1,3 +1,6 @@
+from collections import deque
+
+
 class Graph:
     def __init__(self, roads, tracks, friends) -> None:
         size_initialisation = len(roads) + 1
@@ -7,7 +10,7 @@ class Graph:
 
         self.add_edges_undirected(roads)
         self.add_edges_directed(tracks)
-        self.add_friends(friends)
+        self.multi_source_bfs(friends)
         self.filter_graph()
 
 
@@ -26,45 +29,38 @@ class Graph:
             self.track_graph[start_vertex][0].append(edge) 
 
 
-    def add_friends(self, friends) -> None:
+    def multi_source_bfs(self, friends):
+        queue = deque()
+        visited = [False] * len(self.track_graph)
+
+        # Initialize the BFS queue with all friend locations
         for friend, location in friends:
-            valid_pickups_hops = self.bfs_within_two_hops(start=location)
+            queue.append((location, 0))  # (node, hops)
+            visited[location] = True
+            self.road_graph[location][1] = (friend, location, 0)  # Update the friend's own location
 
-            for pickup, hops in valid_pickups_hops:
-                if hops < self.road_graph[pickup][1][1]:
-                    self.road_graph[pickup][1] = (friend, pickup, hops)
-
-    def filter_graph(self):
-        empty_element = self.road_graph[-1][0]
-        if not empty_element:
-            self.road_graph.pop()
-
-
-    def bfs_within_two_hops(self, start) -> list[int]:
-        # initialise the values
-        queue = [(start, 0)]  # (current_node, hops)
-        visited = [False] * len(self.track_graph)  # track visited nodes
-        visited[start] = True
-        nodes_within_two_hops = []  # store nodes within 2 hops
-
-        nodes_within_two_hops.append((start,0))
-
+        # Perform BFS
         while queue:
-            current_node, hops = queue.pop(0)  # dequeue the first element
+            current_node, hops = queue.popleft()
 
             # Stop if we've reached the hop limit
             if hops == 2:
                 continue
 
             # Explore neighbors
-            for node, neighbor, weight in self.track_graph[current_node][0]:
+            for _, neighbor, weight in self.track_graph[current_node][0]:
                 if not visited[neighbor]:
                     visited[neighbor] = True
-                    queue.append((neighbor, hops + 1))  # enqueue with incremented hops
-                    nodes_within_two_hops.append((neighbor, hops + 1))
+                    queue.append((neighbor, hops + 1))
+                    if hops + 1 < self.road_graph[neighbor][1][2]:
+                        self.road_graph[neighbor][1] = (self.road_graph[current_node][1][0], neighbor, hops + 1)
 
-        return nodes_within_two_hops
-    
+
+    def filter_graph(self):
+        empty_element = self.road_graph[-1][0]
+        if not empty_element:
+            self.road_graph.pop()
+
     def get_graph(self):
         return self.road_graph
     
@@ -86,6 +82,7 @@ if __name__ == "__main__":
 
     graph = Graph(roads, tracks, friends) # initialising the space for the adj_list O(|R|)
 
+    graph.multi_source_bfs(friends)
     print(graph)
 
     
