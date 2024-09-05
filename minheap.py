@@ -1,14 +1,72 @@
 class MinHeap:
     def __init__(self):
+        """
+        Function description: Initializes an empty list to represent the heap.
+
+        Input: None
+
+        Output: None
+        
+        Time complexity: O(1)
+        Time complexity analysis: The constructor only initializes an empty list.
+
+        Space complexity: O(1)
+        Space complexity analysis: Space used is constant for storing the heap attribute.
+        """
         self.heap = []
 
     def parent(self, i):
+        """
+        Function description: Returns the index of the parent of the node at index `i`.
+
+        Input:
+            i: Index of the current node.
+
+        Output:
+            The index of the parent node.
+        
+        Time complexity: O(1)
+        Time complexity analysis: The parent index is calculated with simple arithmetic.
+
+        Space complexity: O(1)
+        Space complexity analysis: No extra space is used beyond a few temporary variables.
+        """
         return (i - 1) // 2 # O(1)
 
     def left_child(self, i): 
+        """
+        Function description: Returns the index of the left child of the node at index `i`.
+
+        Input:
+            i: Index of the current node.
+
+        Output:
+            The index of the left child node.
+        
+        Time complexity: O(1)
+        Time complexity analysis: The left child index is calculated with simple arithmetic.
+
+        Space complexity: O(1)
+        Space complexity analysis: No extra space is used beyond a few temporary variables.
+        """
         return 2 * i + 1 # O(1)
 
     def right_child(self, i): 
+        """
+        Function description: Returns the index of the right child of the node at index `i`.
+
+        Input:
+            i: Index of the current node.
+
+        Output:
+            The index of the right child node.
+        
+        Time complexity: O(1)
+        Time complexity analysis: The right child index is calculated with simple arithmetic.
+
+        Space complexity: O(1)
+        Space complexity analysis: No extra space is used beyond a few temporary variables.
+        """
         return 2 * i + 2 # O(1)
 
     def insert(self, value, priority):
@@ -23,11 +81,13 @@ class MinHeap:
         
         Time complexity: O(log N)
         
-        Time complexity analysis: Inserting an element involves appending it to the end of the list (O(1)) and then performing a heapify-up operation (O(log N)).
+        Time complexity analysis: Inserting an element involves appending it to the end of the 
+        list (O(1)) and then performing a heapify-up operation (O(log N)).
         
         Space complexity: O(1)
         
-        Space complexity analysis: The space used is proportional to the size of the heap, but this does not count towards auxiliary space complexity.
+        Space complexity analysis: The space used is proportional to the size of the heap, but this 
+        does not count towards auxiliary space complexity.
         """
         # Insert the new element at the end of the heap
         self.heap.append((value, priority)) # O(1)
@@ -45,7 +105,8 @@ class MinHeap:
         
         Time complexity: O(log N)
         
-        Time complexity analysis: Extracting the minimum involves replacing the root with the last element (O(1)) and then performing a heapify-down operation (O(log N)).
+        Time complexity analysis: Extracting the minimum involves replacing the root with the last 
+        element (O(1)) and then performing a heapify-down operation (O(log N)).
         
         Space complexity: O(1)
         
@@ -76,13 +137,13 @@ class MinHeap:
         
         Time complexity: O(log N)
         
-        Time complexity analysis: The process of moving an element up involves potentially swapping it with its parent multiple times, which is logarithmic in terms of the number of elements.
+        Time complexity analysis: The process of moving an element up involves potentially swapping it with its 
+        parent multiple times, which is logarithmic in terms of the number of elements.
         
         Space complexity: O(1)
         
         Space complexity analysis: No additional space is used beyond the existing heap.
         """
-        # Move the element at index i up the heap to its correct position
         # Checking if the index is greater than 0 and if the parent of our current priority is greater than the current priority itself 
         # This ensures we are maintaining the minheap property.
 
@@ -102,7 +163,8 @@ class MinHeap:
         
         Time complexity: O(log N)
         
-        Time complexity analysis: The process of moving an element down involves potentially swapping it with its children multiple times, which is logarithmic in terms of the number of elements.
+        Time complexity analysis: The process of moving an element down involves potentially swapping it 
+        with its children multiple times, which is logarithmic in terms of the number of elements.
         
         Space complexity: O(1)
         
