@@ -90,7 +90,6 @@ class CityMap:
                 pickup_friend = friend
                 pickup_location = pickup
                 final_pickup_trainhops = hops
-        
 
         # reconstructing the route
         route = self.route_full_reconstruction(start=start, pickup=pickup_location, destination=destination)
@@ -107,21 +106,13 @@ class CityMap:
 
 
 if __name__ == "__main__":
-    # roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (4,5,3)]
-    # tracks = [(1,3,3), (3,4,2), (4,3,2), (4,5,4), (5,1,6)]
-    # friends = [("Grizz", 1), ("Ice", 3)]
-
-    # myCity = CityMap(roads,tracks,friends)
-    
-    # print(myCity.plan(start=2, destination=5))
-
-    # Example 2.2, a more complex scenario
-    roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (2,5,2)]
-    tracks = [(1,3,4), (3,4,2), (4,5,1), (5,1,6)]
-    friends = [("Grizz", 1)]
+    roads = []
+    tracks = []
+    friends = [("Grizz", 0)]
     myCity = CityMap(roads, tracks, friends)
+    # result = myCity.plan(0, 0)
+    # (result, (0, [0], "Grizz", 0))
 
-    got = myCity.plan(start=2, destination=5)
-    expected = (6, [2,4,2,5], "Grizz", 4)
-    fail_message = f'got {got} for example 2.2, expected {expected}'
-    print(got)
+    print(myCity)
+
+
