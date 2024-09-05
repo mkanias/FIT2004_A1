@@ -7,7 +7,7 @@ class CityMap:
         self.road_graph = Graph(roads, tracks, friends)
 
 
-    def dijkstras(self, start_node: int): # optional end node parameter and edge_type
+    def dijkstras(self, start_node: int, end_node: int = None): # optional end node parameter and edge_type
         # the * method works bc the list items that are being initialised are immutable and therefore they are all independent copies
         distance = [float('inf')] * len(self.road_graph) # all distances are infinity
         parent = [-1] * len(self.road_graph) # all parents are -1
@@ -32,11 +32,16 @@ class CityMap:
                     parent[v] = u
                     priority_queue.insert(v, distance[v])
 
+        # reconstructing shortest path if end node is provided
+        if end_node is not None:
+            path = self.route_half_reconstruction(end=end_node, parents=parent)
+            return path
+
         # if not, then just return the distance and parent lists
         return distance, parent
     
 
-    def route_reconstruction(self, end: int, parents: list[int]) -> list[int]:
+    def route_half_reconstruction(self, end: int, parents: list[int]) -> list[int]:
         path = []
         current = end
         while current != -1:
@@ -45,6 +50,15 @@ class CityMap:
         path.reverse()
         return path
 
+    def route_full_reconstruction(self, start: int, pickup: int, destination: int) -> list[int]:
+        route_half_1 = self.dijkstras(start_node=start, end_node=pickup)
+        route_half_2 = self.dijkstras(start_node=pickup, end_node=destination)
+
+        route_half_1.pop() # removing the pickup spot
+
+        route = route_half_1 + route_half_2
+
+        return route
 
     def plan(self, start: int, destination: int) -> tuple: # (total_time, route, pickup_friend, pickup_location)
         start_distances, start_parents = self.dijkstras(start_node=start) # finding shortest distance from start to all other nodes
@@ -76,10 +90,10 @@ class CityMap:
                 pickup_friend = friend
                 pickup_location = pickup
                 final_pickup_trainhops = hops
-
-                # reconstructing the route
-                route = self.route_reconstruction(end=pickup_location, parents=start_parents) + self.route_reconstruction(end=destination, parents=destination_parents)
         
+
+        # reconstructing the route
+        route = self.route_full_reconstruction(start=start, pickup=pickup_location, destination=destination)
 
         return final_total_time, route, pickup_friend, pickup_location
 
@@ -93,11 +107,21 @@ class CityMap:
 
 
 if __name__ == "__main__":
-    roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (4,5,3)]
-    tracks = [(1,3,3), (3,4,2), (4,3,2), (4,5,4), (5,1,6)]
-    friends = [("Grizz", 1), ("Ice", 3)]
+    # roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (4,5,3)]
+    # tracks = [(1,3,3), (3,4,2), (4,3,2), (4,5,4), (5,1,6)]
+    # friends = [("Grizz", 1), ("Ice", 3)]
 
-    myCity = CityMap(roads,tracks,friends)
-    print(myCity)
+    # myCity = CityMap(roads,tracks,friends)
     
-    print(myCity.plan(start=2, destination=5))
+    # print(myCity.plan(start=2, destination=5))
+
+    # Example 2.2, a more complex scenario
+    roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (2,5,2)]
+    tracks = [(1,3,4), (3,4,2), (4,5,1), (5,1,6)]
+    friends = [("Grizz", 1)]
+    myCity = CityMap(roads, tracks, friends)
+
+    got = myCity.plan(start=2, destination=5)
+    expected = (6, [2,4,2,5], "Grizz", 4)
+    fail_message = f'got {got} for example 2.2, expected {expected}'
+    print(got)
