@@ -39,7 +39,7 @@ class Graph:
 
     def filter_graph(self):
         empty_element = self.road_graph[-1][0]
-        if not empty_element:
+        if len(self.road_graph) > 1 and not empty_element:
             self.road_graph.pop()
 
 
