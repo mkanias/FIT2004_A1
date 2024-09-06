@@ -1,4 +1,4 @@
-from assignment1 import CityMap
+from src.assignment1 import CityMap
 import unittest
 
 class TestCityMap(unittest.TestCase):
