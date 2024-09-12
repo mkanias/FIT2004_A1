@@ -1,5 +1,5 @@
-from minheap import MinHeap
-from graph import Graph
+from src.minheap import MinHeap
+from src.graph import Graph
 
 class CityMap:
     """
@@ -290,13 +290,14 @@ class CityMap:
 
 
 if __name__ == "__main__":
-    roads = []
-    tracks = []
-    friends = [("Grizz", 0)]
+    # Example 1.1, simple example
+    roads = [(0,1,4), (0,3,2), (2,0,3), (3,1,2), (2,4,2), (4,5,3)]
+    tracks = [(1,3,3), (3,4,2), (4,3,2), (4,5,4), (5,1,6)]
+    friends = [("Grizz", 1), ("Ice", 3)]
     myCity = CityMap(roads, tracks, friends)
-    result = myCity.plan(0, 0)
-    (result, (0, [0], "Grizz", 0))
-
-    print(result)
+    print(myCity)
+    got = myCity.plan(start=2, destination=5)
+    expected = (5, [2,4,5], "Ice", 4)
+    fail_message = f'got {got} for example 1.1, expected'
 
 
